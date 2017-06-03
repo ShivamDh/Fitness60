@@ -14,9 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/*
- This is a class used on the main workout page of the app, when completed, it is to display all previous workouts and lead to the creation 
- of new workouts when prompted. The tab right now serves as a bridge between the home page and the new workout activity tab
+/**
+ * A simple {@link Fragment} subclass.
  */
 public class MyWorkoutFragment extends Fragment {
     Context theContext;
@@ -35,7 +34,6 @@ public class MyWorkoutFragment extends Fragment {
 
     }
 
-	//back button pressed handler
     public static void pressBack(Context givenContext) {
         Toast aToast = Toast.makeText(givenContext, R.string.return_home, Toast.LENGTH_SHORT);
         aToast.show();
@@ -52,30 +50,26 @@ public class MyWorkoutFragment extends Fragment {
 
         LinearLayout workoutTab = (LinearLayout) myView.findViewById(R.id.myworkout_tab);
 
-		//testing out the database created, just printing the content as alist
-        if (NewWorkout.done && NewWorkout.Save) { 
-            TextView aText = new TextView(getContext());
-            Cursor theData;
-            if (NewWorkout.myData != null) { //get the data and print it if the database exists
-                theData = NewWorkout.myData.getAllData();
-                StringBuffer buffer = new StringBuffer();
-                if (theData.getCount() > 0) {
-                    while (theData.moveToNext()) {
-                        buffer.append("\n" + "Set " + theData.getString(0) + "\n");
-                        buffer.append("Weight " + theData.getString(1) + "\n");
-                        buffer.append("Reps " + theData.getString(2) + "\n");
-                        buffer.append("Timer " + theData.getString(3) + "\n");
-                    }
+        TextView aText = new TextView(getContext());
+        Cursor theData;
+        if (NewWorkout.myData != null) {
+            theData = NewWorkout.myData.getAllData();
+            StringBuffer buffer = new StringBuffer();
+            if (theData.getCount() > 0) {
+                while (theData.moveToNext()) {
+                    buffer.append("\n" + "Set " + theData.getString(0) + "\n");
+                    buffer.append("Weight " + theData.getString(1) + "\n");
+                    buffer.append("Reps " + theData.getString(2) + "\n");
+                    buffer.append("Timer " + theData.getString(3) + "\n");
                 }
-                aText.setText(buffer.toString());
-                workoutTab.addView(aText);
             }
+            aText.setText(buffer.toString());
+            workoutTab.addView(aText);
         }
 
         Button new_workout;
         new_workout = (Button) myView.findViewById(R.id.button_new_workout);
 
-		//on click listener for creating the new workout activity
         new_workout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
