@@ -28,13 +28,6 @@ import java.util.Timer;
 
 import static shivamdh.com.fitness60.Options.timerC;
 
-/*
-This class is used to by the user when creating a new workout. This class serves to handle all the renderings and
-database manipulations. This class keeps all the individual activities within a workout in a list and keeps track of all their 
-data and properly packages it into the database. The class also handles activity deletion and addition through multiple on click listeners
-and access to constructing the proper activity classes on the user's discretion.
-*/
-
 public class NewWorkout extends Fragment implements View.OnClickListener {
     DatabaseHelper db;
 
@@ -45,12 +38,12 @@ public class NewWorkout extends Fragment implements View.OnClickListener {
     LinearLayout workoutTab;
     Context appContext;
     static WorkoutActivityDatabase myData;
-    public static boolean done = false; //default booleans
+    public static boolean done = false;
     public static boolean Save = false;
 
     public NewWorkout() {
         // Required empty public constructor
-        done = true; //test the true boolean
+        done = true;
     }
 
     public void setTheContext (Context aContext) {
@@ -58,7 +51,6 @@ public class NewWorkout extends Fragment implements View.OnClickListener {
 //        db = new DatabaseHelper(appContext, 0);
     }
 
-	//class within the class to help with the Dialog Fragment that gets called on when the app exit the fragment
     public static class MyDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
         public MyDialogFragment() {
@@ -68,14 +60,14 @@ public class NewWorkout extends Fragment implements View.OnClickListener {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return new AlertDialog.Builder(getActivity()) //send out the appropriate dialog fragment to user for workout save feature
+            return new AlertDialog.Builder(getActivity())
                     .setMessage("Workout closed. Would you like to save it?").setPositiveButton("Yes", this)
                     .setNegativeButton("No", this).create();
         }
 
         @Override
         public void onClick(DialogInterface dialog, int which) {
-                switch (which) { //database actions depend on what the user selects
+                switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         Save = true;
                         break;
@@ -90,39 +82,38 @@ public class NewWorkout extends Fragment implements View.OnClickListener {
 
     @Override
     public void onPause() {
-        super.onPause(); 
+        super.onPause();
+        Log.d("About to", "DESTORRYYYYY");
 
-		//Code below can be used to insert data into the database and allow the database to grow, still incomplete because
-		//the code only takes information of the first activity from the workout (which works well, just need to expand to all activites)
-		//in the workout
-		
-        //THIS IS ONLY TAKING THE DATA FROM THE FIRST WORKOUT ACTIVITY, NEED IT TO DO ALL ACTIVITIES
-//        Cursor previousData;
-//        String buffer;
-//        if (myData != null) {
-//            previousData = myData.getAllData();
-//            previousData.moveToFirst();
-//            if (!previousData.isAfterLast()) {
-//                buffer = previousData.getString(0);
-//            } else {
-//                buffer = "";
-//            }
-//        } else {
-//            buffer = "";
-//        }
-//        int previousSets;
-//        try {
-//            previousSets = Integer.parseInt(buffer);
-//        } catch (NumberFormatException e) {
-//            previousSets = 0;
-//        }
+//        THIS IS ONLY TAKING THE DATA FROM THE FIRST WORKOUT ACTIVITY, NEED IT TO DO ALL ACTIVITIES
+        Cursor previousData;
+        String buffer;
+        if (myData != null) {
+            previousData = myData.getAllData();
+            previousData.moveToFirst();
+            if (!previousData.isAfterLast()) {
+                buffer = previousData.getString(0);
+            } else {
+                buffer = "";
+            }
+        } else {
+            buffer = "";
+        }
+        int previousSets;
+        try {
+            previousSets = Integer.parseInt(buffer);
+        } catch (NumberFormatException e) {
+            previousSets = 0;
+        }
 
         if (workoutActivities.get(0).getClass() == DistanceActivity.class)  { //distance activity
             myData = new WorkoutActivityDatabase(appContext, false, workoutActivities.get(0).table); //create normal database
         } else { //normal activity
             myData = new WorkoutActivityDatabase(appContext, true, workoutActivities.get(0).table); //create normal database
         }
+        Log.d("Cal", "ed");
         myData.addData();
+        Log.d("Cal", "DONE");
 
     }
 
@@ -134,12 +125,10 @@ public class NewWorkout extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
-		//create local variables with inserted paramters
         currContainer = container;
         currInflate = inflater;
         theView = currInflate.inflate(R.layout.new_workout, currContainer, false);
 
-		//used to display the time that the workout starts at
         SimpleDateFormat time = new SimpleDateFormat(getString(R.string.dateFormat), Locale.CANADA);
         Calendar theTime = Calendar.getInstance();
         String displayTime = time.format(theTime.getTime());
@@ -148,10 +137,8 @@ public class NewWorkout extends Fragment implements View.OnClickListener {
         TextView toStartWorkout = (TextView) theView.findViewById(R.id.time_start);
         toStartWorkout.setText(finalTime);
 
-		//test with one activity inserted as a default
         workoutActivities.add(new Activities(container, theView, inflater, getContext(), workoutActivities.size()+1, getActivity(), true));
 
-		//set the button on click listeners for various tasks
         Button addActivities = (Button) theView.findViewById(R.id.new_activity);
         addActivities.setOnClickListener(this);
 
@@ -172,19 +159,19 @@ public class NewWorkout extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.new_activity: //user asks for a new basic activity
+            case R.id.new_activity:
                 if (timerC && workoutActivities.size() > 0) {
                     workoutActivities.get(workoutActivities.size()-1).setTimer.cancel();
                 }
                 workoutActivities.add(new Activities(currContainer, theView, currInflate, getContext(), workoutActivities.size()+1, getActivity(), true));
                 break;
-            case R.id.bodyweight_exercise: //user asks for a new bodyweight exercise activity
+            case R.id.bodyweight_exercise:
                 if (timerC && workoutActivities.size() > 0) {
                     workoutActivities.get(workoutActivities.size()-1).setTimer.cancel();
                 }
                 workoutActivities.add(new Activities(currContainer, theView, currInflate, getContext(), workoutActivities.size()+1, getActivity(), false));
                 break;
-            case R.id.remove_last_activity: //user wishes to remove the last activity in the workout
+            case R.id.remove_last_activity:
                 if (workoutActivities.size() > 0) {
                     if (timerC && workoutActivities.size() > 1) {
                         Activities nowLastActivity = workoutActivities.get(workoutActivities.size() - 2); // about to become the last activity now
@@ -207,7 +194,7 @@ public class NewWorkout extends Fragment implements View.OnClickListener {
                     workoutActivities.remove(workoutActivities.size() - 1); //take out the activity from the linkedlist
                 }
                 break;
-            case R.id.distance_activity: //user opts to start a distance activity
+            case R.id.distance_activity:
                 if (timerC && workoutActivities.size() > 0) {
                     workoutActivities.get(workoutActivities.size()-1).setTimer.cancel();
                 }
